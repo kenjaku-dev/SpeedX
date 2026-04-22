@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
-    console.error('Error saving result:', error);
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
+    console.error('Error saving database result:', error);
+    // Even if db fails, return 200 so UI doesn't crash, we just degrade gracefully
+    return NextResponse.json({ success: false, error: String(error) });
   }
 }

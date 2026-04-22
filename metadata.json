@@ -1,0 +1,6 @@
+{
+  "name": "SpeedX",
+  "description": "A full-stack internet speed test application using Next.js, Web Workers, and Prisma.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

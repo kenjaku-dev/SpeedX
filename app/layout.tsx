@@ -2,6 +2,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { cn } from "@/lib/utils";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -21,7 +23,11 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className={cn("font-sans", inter.variable, jetbrainsMono.variable)}>
-      <body suppressHydrationWarning>{children}</body>
+      <body className="bg-slate-950 min-h-screen flex flex-col" suppressHydrationWarning>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

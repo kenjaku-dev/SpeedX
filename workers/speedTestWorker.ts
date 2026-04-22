@@ -3,6 +3,7 @@ export type TestStage = 'idle' | 'ping' | 'download' | 'upload' | 'complete' | '
 export interface TestMetrics {
   ping: number;
   jitter: number;
+  packetLoss: number; // Percentage
   download: number; // Mbps
   upload: number; // Mbps
   progress: number; // 0-100
@@ -48,6 +49,8 @@ const runTest = async () => {
   
   const validPings = pings.length > 0 ? pings : [0];
   const pingAvg = validPings.reduce((a, b) => a + b, 0) / validPings.length;
+  const packetLoss = Math.max(0, ((10 - pings.length) / 10) * 100);
+  
   let jitter = 0;
   if (validPings.length > 1) {
     let diffs = 0;
@@ -58,7 +61,7 @@ const runTest = async () => {
   }
 
   // === 2. DOWNLOAD CHUNK WORKERS ===
-  sendUpdate('download', { ping: pingAvg, jitter, progress: 0, download: 0 });
+  sendUpdate('download', { ping: pingAvg, jitter, packetLoss, progress: 0, download: 0 });
   
   let downloadedBytes = 0;
   let dlStart = performance.now();
@@ -169,6 +172,7 @@ const runTest = async () => {
   sendUpdate('complete', {
       ping: pingAvg,
       jitter: jitter,
+      packetLoss: packetLoss,
       download: finalDlMbps,
       upload: finalUlMbps,
       progress: 100

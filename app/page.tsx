@@ -102,7 +102,7 @@ export default function SpeedTestPage() {
   const isTesting = ['ping', 'download', 'upload'].includes(metrics.stage);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 md:p-12 selection:bg-cyan-500/30 relative overflow-hidden font-sans">
+    <main className="flex-1 w-full bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 md:p-12 md:pt-32 pt-28 selection:bg-cyan-500/30 relative overflow-hidden font-sans">
       
       {/* Dark Grid Background with dynamic glow */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]" 
@@ -115,11 +115,7 @@ export default function SpeedTestPage() {
 
       <div className="max-w-4xl w-full flex flex-col items-center gap-12 z-10 relative">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <motion.div initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-900/50 shadow-inner border border-slate-800 mb-2">
-             <Activity className="w-4 h-4 text-cyan-400 mr-2" />
-             <span className="font-mono text-[11px] uppercase tracking-[0.2em] font-medium text-slate-400">SpeedX Engine</span>
-          </motion.div>
+        <div className="text-center space-y-4 pt-12">
           <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white drop-shadow-xl">Global Node <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">Telemetry</span></h1>
         </div>
 
@@ -179,8 +175,9 @@ export default function SpeedTestPage() {
           <div className="bg-slate-900/40 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-slate-800/80 grid grid-cols-2 gap-y-6 gap-x-4">
              <DetailItem icon={<Globe className="w-4 h-4 text-slate-500" />} label="ISP" value={serverInfo?.isp || 'Detecting...'} />
              <DetailItem icon={<MapPin className="w-4 h-4 text-slate-500" />} label="Location" value={`${serverInfo?.city || ''}, ${serverInfo?.country || ''}`} />
-             <DetailItem icon={<Server className="w-4 h-4 text-slate-500" />} label="Server Node" value={serverInfo?.server || 'Detecting...'} />
-             <DetailItem icon={<Activity className="w-4 h-4 opacity-0" />} label="IPv4 Address" value={serverInfo?.ip || 'Detecting...'} className="font-mono text-xs text-slate-300" />
+             <DetailItem icon={<Activity className="w-4 h-4 text-slate-500" />} label="Jitter" value={metrics.jitter > 0 ? `${metrics.jitter.toFixed(1)} ms` : '-'} />
+             <DetailItem icon={<Server className="w-4 h-4 text-slate-500" />} label="Packet Loss" value={metrics.packetLoss !== undefined && metrics.ping > 0 ? `${metrics.packetLoss.toFixed(1)}%` : '-'} />
+             <DetailItem icon={<Activity className="w-4 h-4 opacity-0" />} label="IPv4 Address" value={serverInfo?.ip || 'Detecting...'} className="font-mono text-xs text-slate-300 col-span-2" />
           </div>
 
         </div>

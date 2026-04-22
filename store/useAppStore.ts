@@ -19,6 +19,7 @@ interface AppState {
 const defaultMetrics: TestMetrics = {
   ping: 0,
   jitter: 0,
+  packetLoss: 0,
   download: 0,
   upload: 0,
   progress: 0,

@@ -63,64 +63,68 @@ export default function SpeedTestPage() {
   switch (metrics.stage) {
     case 'idle':
       displayValue = 0;
-      displayLabel = 'Start Test';
-      displayUnit = '';
-      activeColor = '#0f172a'; // slate-900
+      displayLabel = 'Ready to Test';
+      displayUnit = 'Network';
+      activeColor = '#475569'; // slate-600
       break;
     case 'ping':
       displayValue = metrics.ping;
       displayLabel = 'Ping';
       displayUnit = 'ms';
-      activeColor = '#eab308'; // yellow-500
+      activeColor = '#fde047'; // yellow-300
       break;
     case 'download':
       displayValue = metrics.download;
       displayLabel = 'Download';
       displayUnit = 'Mbps';
-      activeColor = '#0ea5e9'; // sky-500
+      activeColor = '#22d3ee'; // cyan-400
       break;
     case 'upload':
       displayValue = metrics.upload;
       displayLabel = 'Upload';
       displayUnit = 'Mbps';
-      activeColor = '#8b5cf6'; // violet-500
+      activeColor = '#c084fc'; // purple-400
       break;
     case 'complete':
       displayValue = metrics.download; // show top score
       displayLabel = 'Complete';
       displayUnit = 'Mbps Down';
-      activeColor = '#10b981'; // emerald-500
+      activeColor = '#34d399'; // emerald-400
       break;
     case 'aborted':
       displayValue = 0;
       displayLabel = 'Aborted';
       displayUnit = '';
-      activeColor = '#ef4444'; // red-500
+      activeColor = '#f87171'; // red-400
       break;
   }
 
   const isTesting = ['ping', 'download', 'upload'].includes(metrics.stage);
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 flex flex-col items-center justify-center p-6 md:p-24 selection:bg-sky-200 relative overflow-hidden">
+    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 md:p-12 selection:bg-cyan-500/30 relative overflow-hidden font-sans">
       
-      {/* Background Grid Pattern */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" 
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230f172a' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}} 
+      {/* Dark Grid Background with dynamic glow */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]" 
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}} 
+      />
+      
+      <div 
+        className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-0 pointer-events-none"
       />
 
       <div className="max-w-4xl w-full flex flex-col items-center gap-12 z-10 relative">
         {/* Header */}
         <div className="text-center space-y-4">
-          <motion.div initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white shadow-sm border border-slate-200/60 mb-2 drop-shadow-sm">
-             <Activity className="w-4 h-4 text-sky-500 mr-2" />
-             <span className="font-mono text-[11px] uppercase tracking-widest font-bold text-slate-600">SpeedX Engine</span>
+          <motion.div initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-900/50 shadow-inner border border-slate-800 mb-2">
+             <Activity className="w-4 h-4 text-cyan-400 mr-2" />
+             <span className="font-mono text-[11px] uppercase tracking-[0.2em] font-medium text-slate-400">SpeedX Engine</span>
           </motion.div>
-          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-slate-900 drop-shadow-sm">Measure your precise speed.</h1>
+          <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-white drop-shadow-xl">Global Node <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">Telemetry</span></h1>
         </div>
 
         {/* Gauge Section */}
-        <div className="relative p-10 bg-white/70 backdrop-blur-xl rounded-[3rem] shadow-xl border border-white flex flex-col items-center w-full max-w-lg mx-auto">
+        <div className="relative p-10 bg-slate-900/40 backdrop-blur-3xl rounded-[3rem] shadow-2xl border border-slate-800/80 flex flex-col items-center w-full max-w-lg mx-auto">
           
           <CircularGauge 
             value={displayValue} 
@@ -135,26 +139,26 @@ export default function SpeedTestPage() {
               {isTesting ? (
                 <motion.button
                   key="stop"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   onClick={handleAbort}
-                  className="flex items-center gap-2 px-10 py-4 bg-white text-red-500 rounded-full font-semibold hover:bg-red-50 transition-all shadow-md active:scale-95 border border-red-100"
+                  className="group flex items-center gap-3 px-10 py-3.5 bg-slate-950 text-slate-300 rounded-full font-semibold hover:text-red-400 transition-all active:scale-95 border border-slate-800 hover:border-red-900/50"
                 >
-                  <Square className="w-4 h-4 fill-current" />
-                  Stop Test
+                  <Square className="w-4 h-4 fill-current group-hover:drop-shadow-[0_0_8px_rgba(248,113,113,0.8)] transition-all" />
+                  Terminate
                 </motion.button>
               ) : (
                 <motion.button
                   key="start"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   onClick={handleStart}
-                  className="flex items-center gap-2 px-12 py-4 bg-slate-900 text-white rounded-full font-semibold hover:bg-slate-800 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:translate-y-0 active:scale-95"
+                  className="relative group flex items-center justify-center gap-3 px-12 py-4 bg-slate-50 text-slate-950 rounded-full font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95"
                 >
                   <Play className="w-5 h-5 fill-current" />
-                  {metrics.stage === 'complete' || metrics.stage === 'aborted' ? 'Test Again' : 'Start Test'}
+                  {metrics.stage === 'complete' || metrics.stage === 'aborted' ? 'Restart Sequence' : 'Commence Uplink'}
                 </motion.button>
               )}
             </AnimatePresence>
@@ -165,18 +169,18 @@ export default function SpeedTestPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl mx-auto">
           
           {/* Metrics Card */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-sm border border-slate-200/60 flex flex-wrap items-stretch justify-around gap-6">
-            <MetricItem icon={<Activity className="text-yellow-500 w-5 h-5" />} label="Ping" value={metrics.ping > 0 ? metrics.ping.toFixed(1) : '-'} unit="ms" />
-            <MetricItem icon={<ArrowDown className="text-sky-500 w-5 h-5" />} label="Download" value={metrics.download > 0 ? metrics.download.toFixed(1) : '-'} unit="Mbps" highlight={metrics.stage === 'download' || metrics.stage === 'complete'} />
-            <MetricItem icon={<ArrowUp className="text-violet-500 w-5 h-5" />} label="Upload" value={metrics.upload > 0 ? metrics.upload.toFixed(1) : '-'} unit="Mbps" highlight={metrics.stage === 'upload' || metrics.stage === 'complete'} />
+          <div className="bg-slate-900/40 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-slate-800/80 flex flex-wrap items-stretch justify-around gap-6">
+            <MetricItem icon={<Activity className="text-yellow-400 w-5 h-5" />} label="Ping" value={metrics.ping > 0 ? metrics.ping.toFixed(1) : '-'} unit="ms" />
+            <MetricItem icon={<ArrowDown className="text-cyan-400 w-5 h-5" />} label="Download" value={metrics.download > 0 ? metrics.download.toFixed(1) : '-'} unit="Mbps" highlight={metrics.stage === 'download' || metrics.stage === 'complete'} color="#22d3ee" />
+            <MetricItem icon={<ArrowUp className="text-purple-400 w-5 h-5" />} label="Upload" value={metrics.upload > 0 ? metrics.upload.toFixed(1) : '-'} unit="Mbps" highlight={metrics.stage === 'upload' || metrics.stage === 'complete'} color="#c084fc" />
           </div>
 
           {/* Network Details Card */}
-          <div className="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-sm border border-slate-200/60 grid grid-cols-2 gap-y-6 gap-x-4">
-             <DetailItem icon={<Globe className="w-4 h-4 text-slate-400" />} label="ISP" value={serverInfo?.isp || 'Detecting...'} />
-             <DetailItem icon={<MapPin className="w-4 h-4 text-slate-400" />} label="Location" value={`${serverInfo?.city || ''}, ${serverInfo?.country || ''}`} />
-             <DetailItem icon={<Server className="w-4 h-4 text-slate-400" />} label="Server" value={serverInfo?.server || 'Detecting...'} />
-             <DetailItem icon={<Activity className="w-4 h-4 opacity-0" />} label="IP Address" value={serverInfo?.ip || 'Detecting...'} className="font-mono text-sm font-medium" />
+          <div className="bg-slate-900/40 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-slate-800/80 grid grid-cols-2 gap-y-6 gap-x-4">
+             <DetailItem icon={<Globe className="w-4 h-4 text-slate-500" />} label="ISP" value={serverInfo?.isp || 'Detecting...'} />
+             <DetailItem icon={<MapPin className="w-4 h-4 text-slate-500" />} label="Location" value={`${serverInfo?.city || ''}, ${serverInfo?.country || ''}`} />
+             <DetailItem icon={<Server className="w-4 h-4 text-slate-500" />} label="Server Node" value={serverInfo?.server || 'Detecting...'} />
+             <DetailItem icon={<Activity className="w-4 h-4 opacity-0" />} label="IPv4 Address" value={serverInfo?.ip || 'Detecting...'} className="font-mono text-xs text-slate-300" />
           </div>
 
         </div>
@@ -186,16 +190,18 @@ export default function SpeedTestPage() {
   );
 }
 
-function MetricItem({ icon, label, value, unit, highlight }: { icon: React.ReactNode, label: string, value: string | number, unit: string, highlight?: boolean }) {
+function MetricItem({ icon, label, value, unit, highlight, color }: { icon: React.ReactNode, label: string, value: string | number, unit: string, highlight?: boolean, color?: string }) {
   return (
-    <div className={cn("flex flex-col items-center flex-1 min-w-[80px] transition-all", highlight && "scale-105 drop-shadow-sm")}>
-      <div className="flex items-center gap-1.5 mb-2 text-slate-500 text-xs font-semibold uppercase tracking-widest">
-        {icon}
+    <div className={cn("flex flex-col items-center flex-1 min-w-[80px] transition-all duration-500", highlight ? "scale-105" : "opacity-70 grayscale-[30%]")}>
+      <div className="flex items-center gap-1.5 mb-2 text-slate-400 text-xs font-semibold uppercase tracking-widest drop-shadow-md">
+        <span className={cn("transition-colors", highlight ? "" : "text-slate-500")}>
+          {icon}
+        </span>
         {label}
       </div>
-      <div className="flex items-baseline gap-1.5 text-slate-900 border-b-2 border-slate-100 pb-1 w-full justify-center">
-        <span className="text-3xl font-mono tracking-tighter">{value}</span>
-        <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">{unit}</span>
+      <div className="flex items-baseline gap-1.5 text-white border-b border-slate-800/60 pb-2 w-full justify-center">
+        <span className="text-3xl font-light tracking-tighter" style={{ textShadow: highlight && color ? `0 0 20px ${color}80` : 'none' }}>{value}</span>
+        <span className="text-slate-500 text-[10px] font-mono uppercase tracking-wider">{unit}</span>
       </div>
     </div>
   )
@@ -203,11 +209,11 @@ function MetricItem({ icon, label, value, unit, highlight }: { icon: React.React
 
 function DetailItem({ icon, label, value, className }: { icon: React.ReactNode, label: string, value: string, className?: string }) {
   return (
-    <div className="flex flex-col gap-1.5 p-2 rounded-xl hover:bg-slate-50 transition-colors">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+    <div className="flex flex-col gap-1.5 p-2 rounded-xl hover:bg-slate-800/30 transition-colors">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
          {icon} {label}
       </div>
-      <div className={cn("text-slate-800 font-medium text-sm truncate", className)}>
+      <div className={cn("text-slate-200 font-medium text-sm truncate", className)}>
         {value}
       </div>
     </div>

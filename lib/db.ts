@@ -31,4 +31,14 @@ try {
   // column already exists
 }
 
+try {
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_speedtest_createdat ON SpeedTest(createdAt DESC);
+    CREATE INDEX IF NOT EXISTS idx_speedtest_ip ON SpeedTest(ip);
+    CREATE INDEX IF NOT EXISTS idx_speedtest_isp ON SpeedTest(isp);
+  `);
+} catch (e) {
+  // indexes might already exist or error on creation
+}
+
 export default db;

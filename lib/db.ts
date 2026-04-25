@@ -13,6 +13,7 @@ db.exec(`
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     ping REAL,
     jitter REAL,
+    packetLoss REAL DEFAULT 0,
     download REAL,
     upload REAL,
     ip TEXT,
@@ -23,5 +24,11 @@ db.exec(`
     userAgent TEXT
   )
 `);
+
+try {
+  db.exec(`ALTER TABLE SpeedTest ADD COLUMN packetLoss REAL DEFAULT 0`);
+} catch (e) {
+  // column already exists
+}
 
 export default db;

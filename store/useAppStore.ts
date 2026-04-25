@@ -3,6 +3,7 @@ import { TestStage, TestMetrics } from '@/workers/speedTestWorker';
 
 interface AppState {
   metrics: TestMetrics;
+  resultId: string | null;
   serverInfo: {
     ip: string;
     isp: string;
@@ -12,6 +13,7 @@ interface AppState {
   } | null;
   setMetrics: (metrics: Partial<TestMetrics>) => void;
   setStage: (stage: TestStage) => void;
+  setResultId: (id: string | null) => void;
   setServerInfo: (info: any) => void;
   reset: () => void;
 }
@@ -28,9 +30,11 @@ const defaultMetrics: TestMetrics = {
 
 export const useAppStore = create<AppState>((set) => ({
   metrics: { ...defaultMetrics },
+  resultId: null,
   serverInfo: null,
   setMetrics: (newMetrics) => set((state) => ({ metrics: { ...state.metrics, ...newMetrics } })),
   setStage: (stage) => set((state) => ({ metrics: { ...state.metrics, stage } })),
+  setResultId: (id) => set({ resultId: id }),
   setServerInfo: (info) => set({ serverInfo: info }),
-  reset: () => set({ metrics: { ...defaultMetrics } })
+  reset: () => set({ metrics: { ...defaultMetrics }, resultId: null })
 }));

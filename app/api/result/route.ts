@@ -9,9 +9,9 @@ export async function POST(req: NextRequest) {
     
     const stmt = db.prepare(`
       INSERT INTO SpeedTest (
-        id, ping, jitter, download, upload, ip, isp, city, country, server, userAgent
+        id, ping, jitter, packetLoss, download, upload, ip, isp, city, country, server, userAgent
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `);
 
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
         id,
         Number(data.ping) || 0,
         Number(data.jitter) || 0,
+        Number(data.packetLoss) || 0,
         Number(data.download) || 0,
         Number(data.upload) || 0,
         data.ip || null,

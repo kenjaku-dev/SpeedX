@@ -3,14 +3,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CircularGauge } from '@/components/CircularGauge';
 import { useAppStore } from '@/store/useAppStore';
-import { Play, Square, Activity, ArrowDown, ArrowUp, Globe, MapPin, Server } from 'lucide-react';
+import { Play, Square, Activity, ArrowDown, ArrowUp, Globe, MapPin, Server, Share2, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 
 export default function SpeedTestPage() {
-  const { metrics, serverInfo, setMetrics, setStage, setServerInfo, reset } = useAppStore();
+  const { metrics, serverInfo, resultId, setMetrics, setStage, setResultId, setServerInfo, reset } = useAppStore();
   const workerRef = useRef<Worker | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     // Fetch initial IP info
@@ -31,6 +32,10 @@ export default function SpeedTestPage() {
           fetch('/api/result', {
             method: 'POST',
             body: JSON.stringify({ ...metrics, ...newMetrics, ...serverInfo }),
+          }).then(res => res.json()).then(data => {
+             if (data.success && data.id) {
+                 setResultId(data.id);
+             }
           });
         }
         setStage(stage);
@@ -45,6 +50,7 @@ export default function SpeedTestPage() {
 
   const handleStart = () => {
     reset();
+    setCopied(false);
     setStage('ping');
     workerRef.current?.postMessage({ command: 'start' });
   };
@@ -145,17 +151,30 @@ export default function SpeedTestPage() {
                   Terminate
                 </motion.button>
               ) : (
-                <motion.button
-                  key="start"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  onClick={handleStart}
-                  className="relative group flex items-center justify-center gap-3 px-12 py-4 bg-slate-50 text-slate-950 rounded-full font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95"
-                >
-                  <Play className="w-5 h-5 fill-current" />
-                  {metrics.stage === 'complete' || metrics.stage === 'aborted' ? 'Restart Sequence' : 'Commence Uplink'}
-                </motion.button>
+                <motion.div key="ready-actions" className="flex items-center gap-4" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
+                  <button
+                    onClick={handleStart}
+                    className="relative group flex items-center justify-center gap-3 px-12 py-4 bg-slate-50 text-slate-950 rounded-full font-bold hover:bg-white transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] active:scale-95"
+                  >
+                    <Play className="w-5 h-5 fill-current" />
+                    {metrics.stage === 'complete' || metrics.stage === 'aborted' ? 'Restart Sequence' : 'Commence Uplink'}
+                  </button>
+
+                  {resultId && (
+                    <button
+                      onClick={() => {
+                        const url = `${window.location.origin}/result/${resultId}`;
+                        navigator.clipboard.writeText(url);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="group flex items-center gap-2 px-6 py-4 bg-slate-900 border border-slate-800 text-slate-300 rounded-full font-semibold hover:bg-slate-800 transition-all hover:border-slate-700 active:scale-95"
+                    >
+                      {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+                      <span className="hidden sm:inline">{copied ? 'Copied Link' : 'Share'}</span>
+                    </button>
+                  )}
+                </motion.div>
               )}
             </AnimatePresence>
           </div>

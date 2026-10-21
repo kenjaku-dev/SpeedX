@@ -1,133 +1,133 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
+
+export type GaugeTone = 'neutral' | 'signal' | 'upload' | 'success' | 'warning' | 'danger';
+
+const toneColor: Record<GaugeTone, string> = {
+  neutral: 'text-fg-subtle',
+  signal: 'text-signal',
+  upload: 'text-upload',
+  success: 'text-success',
+  warning: 'text-warning',
+  danger: 'text-danger',
+};
 
 interface CircularGaugeProps {
   value: number; // 0 to max
   max?: number;
   label: string;
   unit?: string;
-  size?: number;
-  primaryColor?: string;
+  tone?: GaugeTone;
+  className?: string;
 }
+
+// The SVG is drawn in a fixed coordinate space and scales with its container,
+// so the ring never clips on narrow screens.
+const VIEW = 340;
+const STROKE = 14;
+const RADIUS = (VIEW - STROKE) / 2 - 16;
 
 export function CircularGauge({
   value,
   max = 100,
   label,
-  unit = 'Mbps',
-  size = 340,
-  primaryColor = '#38bdf8' // Default sky-400
+  unit,
+  tone = 'signal',
+  className,
 }: CircularGaugeProps) {
-  const strokeWidth = 14;
-  const radius = (size - strokeWidth) / 2 - 16;
-  const circumference = radius * 2 * Math.PI;
-  
+  const circumference = RADIUS * 2 * Math.PI;
+
   // Make it a 3/4 circle
   const arcLength = circumference * 0.75;
   const strokeDasharray = `${arcLength} ${circumference}`;
-  
+
   // Map value to arc (clamped)
   const safeValue = Math.min(Math.max(value, 0), max);
-  const percent = safeValue / max;
+  const percent = max > 0 ? safeValue / max : 0;
   const offset = arcLength - percent * arcLength;
+  const colorClass = toneColor[tone];
 
   return (
-    <div className="relative flex flex-col items-center justify-center font-sans tracking-tight" style={{ width: size, height: size }}>
-      {/* Background ambient glow matching primary color */}
-      <div 
-        className="absolute inset-0 rounded-full blur-[80px] opacity-20 transition-colors duration-700 pointer-events-none" 
-        style={{ backgroundColor: primaryColor }}
+    <div className={cn('relative aspect-square w-full max-w-[300px]', className)}>
+      {/* Ambient glow matching the active tone */}
+      <div
+        aria-hidden="true"
+        className={cn(
+          'pointer-events-none absolute inset-0 rounded-full transition-opacity duration-700',
+          colorClass,
+          tone === 'neutral' ? 'opacity-0' : 'opacity-25'
+        )}
+        style={{
+          background:
+            'radial-gradient(circle, transparent 45%, currentColor 62%, transparent 72%)',
+        }}
       />
-      
-      <svg
-        className="transform rotate-[135deg] relative z-10"
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-      >
-        <defs>
-          <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1" />
-            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur2" />
-            <feMerge>
-              <feMergeNode in="blur2" />
-              <feMergeNode in="blur1" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
 
+      <svg
+        aria-hidden="true"
+        className="relative z-10 h-full w-full rotate-[135deg]"
+        viewBox={`0 0 ${VIEW} ${VIEW}`}
+      >
         {/* Outer tick ring (subtle) */}
         <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius + 16}
+          cx={VIEW / 2}
+          cy={VIEW / 2}
+          r={RADIUS + 16}
           fill="transparent"
-          stroke="#1e293b" // slate-800
           strokeWidth="2"
           strokeDasharray="4 12"
           strokeDashoffset="0"
           strokeLinecap="round"
+          className="stroke-line-strong"
         />
 
         {/* Background Arc */}
         <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
+          cx={VIEW / 2}
+          cy={VIEW / 2}
+          r={RADIUS}
           fill="transparent"
-          stroke="#0f172a" // slate-900
-          strokeWidth={strokeWidth}
+          strokeWidth={STROKE}
           strokeDasharray={strokeDasharray}
           strokeLinecap="round"
+          className="stroke-surface-hover"
         />
 
         {/* Foreground Arc */}
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
+        <circle
+          cx={VIEW / 2}
+          cy={VIEW / 2}
+          r={RADIUS}
           fill="transparent"
-          stroke={primaryColor}
-          strokeWidth={strokeWidth}
+          strokeWidth={STROKE}
           strokeDasharray={strokeDasharray}
-          strokeDashoffset={offset}
           strokeLinecap="round"
-          filter="url(#neon-glow)"
-          initial={{ strokeDashoffset: arcLength }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+          className={colorClass}
+          stroke="currentColor"
+          style={{ strokeDashoffset: offset, transition: 'stroke-dashoffset 180ms linear' }}
         />
       </svg>
 
-      {/* Inner Label */}
-      <div className="absolute flex flex-col items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-        <motion.span 
-          layoutId="gauge-label"
-          className="text-slate-400 uppercase tracking-[0.2em] text-[10px] font-bold mb-2 transition-colors duration-500"
-          style={{ color: primaryColor === '#475569' ? '#94a3b8' : primaryColor }}
-        >
-          {label}
-        </motion.span>
-        
-        <div className="flex items-baseline justify-center">
-          <motion.span 
-            layoutId="gauge-value"
-            className="text-7xl md:text-8xl font-light tracking-tighter text-slate-50 drop-shadow-md"
-          >
-            {safeValue.toFixed(1)}
-          </motion.span>
-        </div>
-        
-        <motion.span 
-          layoutId="gauge-unit"
-          className="text-slate-500 font-mono text-xs mt-2 uppercase tracking-widest bg-slate-900/50 backdrop-blur-sm border border-slate-800 px-3 py-1 rounded-full shadow-inner"
-        >
-          {unit}
-        </motion.span>
+      {/* Inner readout. The numbers here are duplicated by the labelled
+          readouts below, so the gauge itself stays out of the accessibility
+          tree instead of being re-read on every sample. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6"
+      >
+        <span className="label mb-2 text-fg-muted">{label}</span>
+
+        <span className="text-display font-medium leading-none tabular-nums text-fg">
+          {safeValue.toFixed(1)}
+        </span>
+
+        {unit ? (
+          <span className="mt-2 rounded-full border border-line bg-surface/60 px-3 py-1 font-mono text-micro uppercase text-fg-subtle">
+            {unit}
+          </span>
+        ) : null}
       </div>
     </div>
   );

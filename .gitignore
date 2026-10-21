@@ -7,3 +7,9 @@ coverage/
 !.env.example
 
 /generated/prisma
+
+# local sqlite data
+data/
+/dev.db
+/dev.db-journal
+*.tsbuildinfo

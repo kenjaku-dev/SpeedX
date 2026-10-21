@@ -1,71 +1,175 @@
-import { Activity, Zap, Shield, Cpu, ExternalLink } from 'lucide-react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+
+import { PageShell } from '@/components/PageShell';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+export const metadata: Metadata = {
+  title: 'How it works',
+  description:
+    'How SpeedX measures ping, download and upload, why chunk sizes change, what can skew a result, and what a saved result stores.',
+};
+
+const phases = [
+  {
+    step: '01',
+    title: 'Ping',
+    meta: '10 round trips',
+    tone: 'text-fg',
+    body: 'The browser times ten requests to the server. The average round trip becomes the ping reading; jitter is the average change between consecutive samples; failed requests count as packet loss.',
+  },
+  {
+    step: '02',
+    title: 'Download',
+    meta: '8 seconds · 4 streams',
+    tone: 'text-signal',
+    body: 'Four parallel requests pull pre-generated chunks from the server. Bytes are counted as they arrive, and the chunk size grows with the measured rate.',
+  },
+  {
+    step: '03',
+    title: 'Upload',
+    meta: '8 seconds · 3 streams',
+    tone: 'text-upload',
+    body: 'The browser sends generated data to the server, which reads and discards it. As with download, the payload size follows the measured rate.',
+  },
+];
 
 export default function AboutPage() {
   return (
-    <main className="flex-1 w-full bg-slate-950 text-slate-100 flex flex-col items-center pt-32 pb-12 p-6 md:p-12 selection:bg-cyan-500/30 relative overflow-hidden font-sans">
-      
-      {/* Dark Grid Background with dynamic glow */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.4]" 
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}} 
-      />
-      
-      <div 
-        className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent z-0 pointer-events-none"
-      />
-
-      <div className="max-w-3xl w-full z-10 relative flex flex-col gap-16">
-        
-        {/* Header Hero */}
-        <div className="text-center space-y-6 flex flex-col items-center pt-8">
-          <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-white drop-shadow-xl">
-            Engine <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">Architecture</span>
-          </h1>
-          <p className="text-slate-400 max-w-xl text-lg font-light leading-relaxed">
-            SpeedX is a next-generation latency and bandwidth diagnostic tool engineered to bypass standard browser buffer limitations.
+    <PageShell className="items-center px-5 pb-20 pt-28 md:px-8 md:pt-32">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-10 md:gap-12">
+        <header className="flex flex-col gap-4">
+          <p className="label text-fg-subtle">Method</p>
+          <h1 className="text-h1 font-medium text-fg">How the test works</h1>
+          <p className="max-w-2xl text-base leading-relaxed text-fg-muted md:text-lg">
+            SpeedX runs three measurements between this browser and the server that delivered the
+            page. A full test takes about 16 seconds.
           </p>
-        </div>
+        </header>
 
-        {/* Spec Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-            <SpecCard 
-                icon={<Cpu className="w-6 h-6 text-purple-400" />}
-                title="Zero-Copy Buffer Threads"
-                desc="The backend allocates a single 30MB randomized continuous memory mapped array at startup. Testing dynamically chunks directly from raw memory to bypass JavaScript garbage collection."
-            />
-            <SpecCard 
-                icon={<Zap className="w-6 h-6 text-yellow-400" />}
-                title="Dynamic Auto-Scaling"
-                desc="Parallel web worker threads actively monitor your connection throughput, scaling payload chunks from 2MB to 30MB instantly to accurately saturate modern fiber-optic TCP windows."
-            />
-            <SpecCard 
-                icon={<Activity className="w-6 h-6 text-cyan-400" />}
-                title="Real-time Polling Engine"
-                desc="Unlike traditional blob buffering which freezes UI threads, SpeedX utilizes an unbuffered Native Reader stream locking the browser refresh rate to a buttery smooth 100ms ticker."
-            />
-            <SpecCard 
-                icon={<Shield className="w-6 h-6 text-emerald-400" />}
-                title="Telemetry Privacy"
-                desc="Edge nodes route ping responses instantly without deploying permanent tracking cookies. Temporary telemetry data calculates jitter purely via localized volatile arrays."
-            />
-        </div>
+        <ol
+          role="list"
+          className="grid overflow-hidden rounded-4xl border border-line bg-surface sm:grid-cols-3"
+        >
+          {phases.map((phase, index) => (
+            <li
+              key={phase.step}
+              className={cn(
+                'flex flex-col gap-3 px-6 py-6',
+                index > 0 && 'border-t border-line sm:border-l sm:border-t-0'
+              )}
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="font-mono text-micro tracking-[0.14em] text-fg-subtle">
+                  {phase.step}
+                </span>
+                <span className="font-mono text-micro uppercase tracking-[0.14em] text-fg-subtle">
+                  {phase.meta}
+                </span>
+              </div>
+              <h2 className={cn('text-h3 font-medium', phase.tone)}>{phase.title}</h2>
+              <p className="text-sm leading-relaxed text-fg-muted">{phase.body}</p>
+            </li>
+          ))}
+        </ol>
 
-      </div>
-    </main>
-  );
-}
+        <div className="grid gap-x-12 gap-y-10 md:grid-cols-2">
+          <section className="border-t border-line pt-5">
+            <h2 className="text-h3 font-medium text-fg">Reading the numbers</h2>
+            <dl className="mt-4 space-y-3 text-sm leading-relaxed">
+              <div className="flex flex-col gap-0.5">
+                <dt className="font-medium text-fg">Ping</dt>
+                <dd className="text-fg-muted">
+                  The average round-trip time across ten attempts from this browser, including
+                  request overhead. It reads a little higher than a network-level ping.
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <dt className="font-medium text-fg">Jitter</dt>
+                <dd className="text-fg-muted">
+                  The average change between consecutive ping samples. Lower is steadier.
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <dt className="font-medium text-fg">Packet loss</dt>
+                <dd className="text-fg-muted">
+                  The share of the ten pings that did not come back.
+                </dd>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <dt className="font-medium text-fg">Download and upload</dt>
+                <dd className="text-fg-muted">
+                  The average rate over each eight-second phase, not the peak reading.
+                </dd>
+              </div>
+            </dl>
+          </section>
 
-function SpecCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
-    return (
-        <div className="bg-slate-900/40 backdrop-blur-2xl rounded-3xl p-8 border border-slate-800/80 hover:bg-slate-800/40 transition-colors group">
-            <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 shadow-inner group-hover:scale-110 transition-transform duration-500">
-                    {icon}
-                </div>
-                <h3 className="text-lg font-medium text-slate-100 tracking-wide">{title}</h3>
+          <section className="border-t border-line pt-5">
+            <h2 className="text-h3 font-medium text-fg">Why the chunks change</h2>
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-fg-muted">
+              <p>
+                Download starts with 5 MB requests and can grow to 30 MB; upload starts at 2 MB and
+                can grow to 15 MB. The size follows the measured rate, so a slow link still
+                completes requests and a fast link is not limited by round trips.
+              </p>
+              <p>Four download streams and three upload streams run at the same time.</p>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed font-light">
-                {desc}
+          </section>
+
+          <section className="border-t border-line pt-5">
+            <h2 className="text-h3 font-medium text-fg">What can skew a result</h2>
+            <ul className="mt-4 space-y-2 text-sm leading-relaxed text-fg-muted">
+              <li>Wi-Fi signal and interference.</li>
+              <li>Device CPU, battery saver, or other open tabs.</li>
+              <li>A VPN, proxy, or privacy extension.</li>
+              <li>Distance to and load on the server.</li>
+              <li>Other traffic on the connection.</li>
+            </ul>
+            <p className="mt-4 text-sm leading-relaxed text-fg-muted">
+              A browser test measures one path to one server, not the rate on your plan.
             </p>
+          </section>
+
+          <section className="border-t border-line pt-5">
+            <h2 className="text-h3 font-medium text-fg">Limits</h2>
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-fg-muted">
+              <p>
+                The test runs for about 16 seconds against the server that served this page. Treat
+                it as a useful check, not a certification: results move with the network, the
+                device, and the time of day.
+              </p>
+              <p>Run it more than once before drawing a conclusion.</p>
+            </div>
+          </section>
         </div>
-    )
+
+        <section className="rounded-4xl border border-line bg-surface p-6 md:p-8">
+          <h2 className="text-h3 font-medium text-fg">What is stored</h2>
+          <div className="mt-4 grid gap-4 text-sm leading-relaxed text-fg-muted md:grid-cols-2">
+            <p>
+              A saved result keeps the measurements, ISP, approximate city and country, the server
+              that ran the test, and the time. It does not keep your IP address, name, or account.
+            </p>
+            <p>
+              There are no cookies or analytics. ISP and city come from a third-party lookup of the
+              connecting IP when the page loads. Result links are not indexed by search engines, but anyone with the
+              link can open one.
+            </p>
+          </div>
+        </section>
+
+        <div className="flex flex-col gap-4 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-fg-muted">Ready to measure this connection?</p>
+          <Link
+            href="/"
+            className={buttonVariants({ variant: 'primary', size: 'lg', className: 'w-full sm:w-auto' })}
+          >
+            Start test
+          </Link>
+        </div>
+      </div>
+    </PageShell>
+  );
 }
